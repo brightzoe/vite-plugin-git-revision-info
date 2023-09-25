@@ -1,0 +1,40 @@
+{
+  "name": "vite-plugin-git-revision-info",
+  "version": "1.0.0",
+  "description": "A Vite plugin that provides git revision information to your project.",
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsup src/index.ts --dts --format cjs,esm",
+    "build-local":"tsup src/index.ts --dts --format cjs,esm --watch"
+  },
+  "keywords": [
+    "vite",
+    "plugin",
+    "git",
+    "commit",
+    "revision"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "vite": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.14.4",
+    "tsup": "^7.2.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.1.0"
+  }
+}
