@@ -37,6 +37,6 @@ export async function runGitCommand(gitWorkTree: string | undefined, command: st
   } catch (error) {
     console.error('Error executing git command:', error);
     //todo: test error
-    throw error;
+    return `Error executing git command`;
   }
 }

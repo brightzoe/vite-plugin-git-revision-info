@@ -3,49 +3,132 @@ import { Plugin, PluginOption } from 'vite';
 
 import { runGitCommand } from './helpers';
 
+
+
+/**
+ * Command to get the commit hash.
+ * @default 'rev-parse HEAD'
+ */
 const COMMITHASH_COMMAND = 'rev-parse HEAD';
+
+/**
+ * Command to get the version.
+ * @default 'describe --always'
+ */
 const VERSION_COMMAND = 'describe --always';
+
+/**
+ * Command to get the branch.
+ * @default 'rev-parse --abbrev-ref HEAD'
+ */
 const BRANCH_COMMAND = 'rev-parse --abbrev-ref HEAD';
+
+/**
+ * Command to get the last commit time.
+ * @default 'log -1 --format=%cI'
+ */
 const LASTCOMMITTIME_COMMAND = 'log -1 --format=%cI';
+
+/**
+ * Command to get the last commit message.
+ * @default 'log -1 --format=%s'
+ */
 const LASTCOMMITMSG_COMMAND = 'log -1 --format=%s';
+
+/**
+ * Variable for commit hash.
+ * @default 'GIT_COMMITHASH'
+ */
 const COMMITHASH_VAR = 'GIT_COMMITHASH';
+
+/**
+ * Variable for version.
+ * @default 'GIT_VERSION'
+ */
 const VERSION_VAR = 'GIT_VERSION';
+
+/**
+ * Variable for branch.
+ * @default 'GIT_BRANCH'
+ */
 const BRANCH_VAR = 'GIT_BRANCH';
+
+/**
+ * Variable for last commit time.
+ * @default 'GIT_LASTCOMMITTIME'
+ */
 const LASTCOMMITTIME_VAR = 'GIT_LASTCOMMITTIME';
+
+/**
+ * Variable for last commit message.
+ * @default 'GIT_LASTCOMMITMSG'
+ */
 const LASTCOMMITMSG_VAR = 'GIT_LASTCOMMITMSG';
 
+/**
+ * Interface representing the flags for git.
+ */
 interface GitFlags {
+  /** Whether to retrieve the commit hash. @default true */
   commitHash?: boolean;
+  /** Whether to retrieve the version. @default true */
   version?: boolean;
+  /** Whether to retrieve the branch. @default true */
   branch?: boolean;
+  /** Whether to retrieve the last commit time. @default true */
   lastCommitTime?: boolean;
+  /** Whether to include lightweight tags. @default false */
   lightweightTags?: boolean;
+  /** Whether to retrieve the last commit message. @default false */
   lastCommitMsg?: boolean;
 }
 
+
+
+
+/**
+ * Interface representing the variables for git.
+ */
 interface GitVars {
+  /** Variable for commit hash. @default 'GIT_COMMITHASH' */
   commitHashVar?: string;
+  /** Variable for version. @default 'GIT_VERSION' */
   versionVar?: string;
+  /** Variable for branch. @default 'GIT_BRANCH' */
   branchVar?: string;
+  /** Variable for last commit time. @default 'GIT_LASTCOMMITTIME' */
   lastCommitTimeVar?: string;
+  /** Variable for last commit message. @default 'GIT_LASTCOMMITMSG' */
   lastCommitMsgVar?: string;
 }
 
+/**
+ * Interface representing the commands for git.
+ */
 interface GitCommands {
+  /** Command for commit hash. @default 'rev-parse HEAD' */
   commitHashCommand?: string;
+  /** Command for version. @default 'describe --always' */
   versionCommand?: string;
+  /** Command for branch. @default 'rev-parse --abbrev-ref HEAD' */
   branchCommand?: string;
+  /** Command for last commit time. @default 'log -1 --format=%cI' */
   lastCommitTimeCommand?: string;
+  /** Command for last commit message. @default 'log -1 --format=%s' */
   lastCommitMsgCommand?: string;
 }
 
-// Combining the split interfaces into the main GitRevisionPluginOptions
+/**
+ * Interface representing the options for GitRevisionPlugin.
 
+ */
 interface GitRevisionPluginOptions extends GitFlags, GitCommands, GitVars {
+  /** The git work tree. @default '' */
   gitWorkTree?: string;
+  /** Custom variable. @default '__GIT__INFO' */
   customVar?: string;
   /**
-   * 是否要打印到控制台
+   * Whether to print directly to the console.
    * @default false
    */
   consoleDirectly?: boolean;
@@ -55,11 +138,14 @@ type ModifiedOptions = {
   [K in keyof GitRevisionPluginOptions]-?: GitRevisionPluginOptions[K];
 };
 
+/**
+ * Default options for GitRevisionPlugin.
+ */
 const defaultOpt: ModifiedOptions = {
   commitHash: true,
   version: true,
   branch: true,
-  lightweightTags: true,
+  lightweightTags: false,
   lastCommitTime: true,
   lastCommitMsg: true,
   commitHashVar: COMMITHASH_VAR,
@@ -151,9 +237,9 @@ async function generateGitData(options: ModifiedOptions) {
 }
 
  function vitePluginGitRevisionInfo(
-  options: GitRevisionPluginOptions,
+  options?: GitRevisionPluginOptions,
 ): Plugin {
-  if (options?.versionCommand && options.lightweightTags) {
+  if (options?.versionCommand && options?.lightweightTags) {
     throw new Error("lightweightTags can't be used together versionCommand");
   }
   const mergeOptions = {
@@ -166,7 +252,7 @@ async function generateGitData(options: ModifiedOptions) {
 
   return {
     name: 'vite-plugin-git-revision-info',
-    // apply: 'build',
+    apply: 'build',
     async config() {
       return {
         // 全局变量，可以在整个应用中使用
